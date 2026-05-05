@@ -143,7 +143,3 @@ The `active-responses.log` file recorded a timestamped entry of when the block w
 3. Connect a Kali Linux VM on the same host-only network.
 4. Apply the `ossec.conf` configuration shown above.
 5. Run the brute-force simulation and observe the alerts and firewall response.
-
-![Full Lab Overview](assets/screenshots/09-full-lab-overview.png)
-
-![Setup Reference](assets/screenshots/10-setup-complete.png)
