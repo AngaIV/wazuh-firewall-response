@@ -78,7 +78,6 @@ The rule IDs correspond to SSH authentication failures in Wazuh's built-in rules
 Used a simple loop from the Kali machine to generate repeated SSH failures and trigger the detection rules:
 
 ```bash
-# Brute-force simulation
 for i in {1..10}; do ssh ghost@192.168.56.103; done
 ```
 
@@ -94,7 +93,7 @@ The Wazuh Manager flagged the repeated login failures and generated alerts again
 
 ### Automated Block
 
-Wazuh signalled the Agent to add a `DROP` rule in `iptables` for the attacking IP. Verified with:
+Wazuh signaled the Agent to add a `DROP` rule in `iptables` for the attacking IP. Verified with:
 
 ```bash
 sudo iptables -L -n
