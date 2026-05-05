@@ -42,7 +42,7 @@ The Wazuh Agent monitors the authentication log on the victim machine:
 
 SSH failures are picked up in real time. Once enough failures occur within a short window, the detection rules trigger.
 
-![Wazuh Agent Log Monitoring](assets/screenshots/03-wazuh-agent-log-monitoring.png)
+![Wazuh Agent Log Monitoring](assets/image5.png)
 
 ### 2. Active Response Setup
 
