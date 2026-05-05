@@ -46,7 +46,7 @@ SSH failures are picked up in real time. Once enough failures occur within a sho
 
 ### 2. Active Response Setup
 
-Configured `ossec.conf` on the Wazuh Manager with two blocks — one to define the command, one to define when it fires.
+Configured `ossec.conf` on the Wazuh Manager with two blocks: one to define the command, one to define when it fires.
 
 **Command:**
 
