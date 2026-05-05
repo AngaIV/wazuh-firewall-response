@@ -1,4 +1,4 @@
-# Active Defense SIEM System
+# Wazuh Active Defense SIEM System
 **Automated Threat Detection and Incident Response using Wazuh and iptables**
 
 ---
