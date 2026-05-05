@@ -7,7 +7,7 @@
 
 A home lab project that combines **Wazuh SIEM/XDR** with `iptables` to build an active defense system. The system monitors SSH brute-force activity and automatically blocks the attacking IP, enabling a transition from passive detection to real-time response.
 
-![Project Overview](assets/screenshots/01-project-overview.png)
+![Project Overview](assets/image2.png)
 
 ---
 
