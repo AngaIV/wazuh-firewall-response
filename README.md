@@ -90,7 +90,7 @@ for i in {1..10}; do ssh ghost@192.168.56.103; done
 
 The Wazuh Manager flagged the repeated login failures and generated alerts against the relevant rule IDs.
 
-![Wazuh Alerts](assets/screenshots/06-wazuh-alerts.png)
+![Wazuh Alerts](assets/image5.png)
 
 ### Automated Block
 
