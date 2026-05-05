@@ -3,9 +3,9 @@
 
 ---
 
-## Project Overview
+## About the Project
 
-The goal of this project was to move past passive monitoring and build something that could actually respond to a threat on its own. By combining **Wazuh SIEM/XDR** with `iptables`, the system detects SSH brute-force attacks and automatically blocks the source IP without requiring manual intervention.
+A home lab project that combines **Wazuh SIEM/XDR** with `iptables` to build an active defense system. The system monitors SSH brute-force activity and automatically blocks the attacking IP, enabling a transition from passive detection to real-time response.
 
 ![Project Overview](assets/screenshots/01-project-overview.png)
 
@@ -15,18 +15,18 @@ The goal of this project was to move past passive monitoring and build something
 
 | Component | Role |
 |---|---|
-| **Wazuh Manager** | Central hub that ingests logs, evaluates rules, and triggers active responses when thresholds are met. |
-| **Victim VM** | Runs the Wazuh Agent and serves as the target machine, with `auth.log` continuously monitored. |
-| **Kali Linux VM** | Acts as the threat actor in the simulation, generating SSH brute-force traffic against the victim. |
-| **iptables** | Enforces host-level firewall rules, dropping packets from any IP address flagged by Wazuh. |
+| **Wazuh Manager** | Collects logs, evaluates detection rules, and triggers active responses. |
+| **Victim VM** | Runs the Wazuh Agent and monitors authentication logs. |
+| **Kali Linux VM** | Used to simulate SSH brute-force attacks for testing. |
+| **iptables** | Blocks malicious IP addresses at the host firewall level. |
 
 ---
 
-## Lab Network Setup
+## Network Setup
 
-The environment runs three virtual machines on a shared host-only network, which keeps the attack traffic isolated while still allowing the machines to communicate with each other as they would in a real scenario.
+Three virtual machines running on a host-only network to simulate a real attack scenario in an isolated environment.
 
-![Network Architecture Diagram](assets/screenshots/02-network-architecture.png)
+![Network Architecture](assets/screenshots/02-network-architecture.png)
 
 ---
 
@@ -34,21 +34,21 @@ The environment runs three virtual machines on a shared host-only network, which
 
 ### 1. Log Monitoring
 
-The Wazuh Agent is configured to monitor the system authentication log on the victim machine:
+The Wazuh Agent monitors the authentication log on the victim machine:
 
 ```
 /var/log/auth.log
 ```
 
-Each SSH failure gets picked up as it happens. When enough failures occur within a defined window, the relevant detection rules fire.
+SSH failures are picked up in real time. Once enough failures occur within a short window, the detection rules trigger.
 
 ![Wazuh Agent Log Monitoring](assets/screenshots/03-wazuh-agent-log-monitoring.png)
 
-### 2. Active Response Configuration
+### 2. Active Response Setup
 
-Inside `ossec.conf` on the Wazuh Manager, two blocks handle the automated response — one defines the action to take, the other defines when to take it.
+Configured `ossec.conf` on the Wazuh Manager with two blocks — one to define the command, one to define when it fires.
 
-**Command definition:**
+**Command:**
 
 ```xml
 <command>
@@ -58,7 +58,7 @@ Inside `ossec.conf` on the Wazuh Manager, two blocks handle the automated respon
 </command>
 ```
 
-**Response trigger:**
+**Trigger:**
 
 ```xml
 <active-response>
@@ -69,22 +69,20 @@ Inside `ossec.conf` on the Wazuh Manager, two blocks handle the automated respon
 </active-response>
 ```
 
-The rule IDs referenced here correspond to SSH authentication failures in Wazuh's built-in ruleset. A `timeout` of `600` seconds means the block is automatically lifted after **10 minutes**, which keeps the response proportionate while still disrupting an active attack.
+The rule IDs correspond to SSH authentication failures in Wazuh's built-in ruleset. The `timeout` of `600` seconds keeps the block in place for **10 minutes** before it lifts automatically.
 
-![ossec.conf Active Response Configuration](assets/screenshots/04-ossec-conf-config.png)
+![Active Response Configuration](assets/screenshots/04-ossec-conf-config.png)
 
 ### 3. Attack Simulation
 
-A simple loop from the Kali machine was enough to trigger the detection rules:
+Used a simple loop from the Kali machine to generate repeated SSH failures and trigger the detection rules:
 
 ```bash
-# Controlled brute-force simulation
+# Brute-force simulation
 for i in {1..10}; do ssh ghost@192.168.56.103; done
 ```
 
-The intent was to replicate the kind of repeated authentication failures that Wazuh's SSH rules are designed to catch.
-
-![Kali Linux Brute Force Simulation](assets/screenshots/05-kali-brute-force.png)
+![Kali Brute Force Simulation](assets/screenshots/05-kali-brute-force.png)
 
 ---
 
@@ -92,23 +90,23 @@ The intent was to replicate the kind of repeated authentication failures that Wa
 
 ### Detection
 
-The Wazuh Manager registered the spike in failed login attempts almost immediately and generated alerts against the relevant rule IDs.
+The Wazuh Manager flagged the repeated login failures and generated alerts against the relevant rule IDs.
 
-![Wazuh Security Alerts](assets/screenshots/06-wazuh-alerts.png)
+![Wazuh Alerts](assets/screenshots/06-wazuh-alerts.png)
 
 ### Automated Block
 
-Once the threshold was crossed, Wazuh instructed the Agent to add a `DROP` rule in `iptables` for the attacking IP. The following command confirmed it was in place:
+Wazuh signalled the Agent to add a `DROP` rule in `iptables` for the attacking IP. Verified with:
 
 ```bash
 sudo iptables -L -n
 ```
 
-![iptables Rule Verification](assets/screenshots/07-iptables-verification.png)
+![iptables Verification](assets/screenshots/07-iptables-verification.png)
 
 ### Audit Trail
 
-The `active-responses.log` file captured a timestamped record of when the block was applied and what triggered it, which is useful for reviewing the response after the fact.
+The `active-responses.log` file recorded a timestamped entry of when the block was applied and what triggered it.
 
 ![Active Response Log](assets/screenshots/08-active-response-log.png)
 
@@ -116,36 +114,49 @@ The `active-responses.log` file captured a timestamped record of when the block 
 
 ## Key Learnings
 
-| Area | What I Took Away |
+| Area | What Was Demonstrated |
 |---|---|
-| **XDR/SIEM Operations** | Gained practical experience configuring Wazuh end-to-end, from agent deployment to manager-side rule tuning. |
-| **Network Defense** | Understood how detection events can be chained directly into firewall enforcement using `iptables`. |
-| **Incident Response** | Reinforced why automating the containment phase matters — manual response simply cannot match the speed of an automated attacker. |
-| **Threat Simulation** | Running the attack myself gave useful perspective on what the logs look like from the defender's side. |
-| **Troubleshooting** | Worked through XML syntax issues and rule ID mismatches during setup, which ended up being some of the most instructive parts of the process. |
+| **XDR/SIEM Operations** | Configured and managed Wazuh from scratch, including agent deployment and rule tuning. |
+| **Network Defense** | Chained SIEM detections directly into host firewall enforcement using `iptables`. |
+| **Incident Response** | Automated the containment phase, reducing response time significantly. |
+| **Threat Simulation** | Used Kali Linux to simulate SSH brute-force attacks in a controlled environment. |
+| **Troubleshooting** | Resolved XML syntax errors and rule ID mismatches during setup. |
+
+---
+
+## Tools Used
+
+| Tool | Purpose |
+|---|---|
+| **Wazuh** | SIEM/XDR platform for log collection and threat detection. |
+| **Kali Linux** | Used to simulate brute-force attacks. |
+| **iptables** | Host-based firewall for blocking malicious IPs. |
+| **VirtualBox** | Used to run and network the virtual machines. |
 
 ---
 
 ## Skills Applied
 
-- Wazuh SIEM/XDR configuration and management
+- Wazuh SIEM/XDR configuration
 - SSH brute-force detection
 - Linux log monitoring (`auth.log`)
 - Active response automation
 - `iptables` firewall rules
 - Host-only VM networking
-- SOC workflow design
+- SOC workflow implementation
 - Incident detection and containment
-- Controlled adversarial testing with Kali Linux
+- Security testing using Kali Linux
 
 ---
 
-## Summary
+## How to Replicate
 
-A SIEM that only generates alerts is only doing half the job. This project was an exercise in closing the loop — taking a detection and turning it into an action. The implementation is straightforward, but the underlying pattern is the same one used in production environments: detect, decide, respond. Replacing `iptables` with a cloud security group or an EDR integration would follow the same logic at a larger scale.
+1. Set up Wazuh Manager on a Linux VM.
+2. Install the Wazuh Agent on a second Linux VM (victim machine).
+3. Connect a Kali Linux VM on the same host-only network.
+4. Apply the `ossec.conf` configuration shown above.
+5. Run the brute-force simulation and observe the alerts and firewall response.
 
 ![Full Lab Overview](assets/screenshots/09-full-lab-overview.png)
-
-> To replicate this setup, you will need Wazuh 4.x, a Linux victim VM with the Wazuh Agent installed, and a Kali Linux machine on the same network. All configuration snippets used in this project are included above.
 
 ![Setup Reference](assets/screenshots/10-setup-complete.png)
