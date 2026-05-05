@@ -71,7 +71,7 @@ Configured `ossec.conf` on the Wazuh Manager with two blocks: one to define the 
 
 The rule IDs correspond to SSH authentication failures in Wazuh's built-in ruleset. The `timeout` of `600` seconds keeps the block in place for **10 minutes** before it lifts automatically.
 
-![Active Response Configuration](assets/screenshots/04-ossec-conf-config.png)
+![Active Response Configuration](assets/image3.png)
 
 ### 3. Attack Simulation
 
