@@ -82,8 +82,6 @@ Used a simple loop from the Kali machine to generate repeated SSH failures and t
 for i in {1..10}; do ssh ghost@192.168.56.103; done
 ```
 
-![Kali Brute Force Simulation](assets/screenshots/05-kali-brute-force.png)
-
 ---
 
 ## Results
@@ -102,13 +100,13 @@ Wazuh signalled the Agent to add a `DROP` rule in `iptables` for the attacking I
 sudo iptables -L -n
 ```
 
-![iptables Verification](assets/screenshots/07-iptables-verification.png)
+![iptables Verification](assets/image4.png)
 
 ### Audit Trail
 
 The `active-responses.log` file recorded a timestamped entry of when the block was applied and what triggered it.
 
-![Active Response Log](assets/screenshots/08-active-response-log.png)
+![Active Response Log](assets/image6.png)
 
 ---
 
