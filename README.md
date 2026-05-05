@@ -122,17 +122,6 @@ The `active-responses.log` file recorded a timestamped entry of when the block w
 
 ---
 
-## Tools Used
-
-| Tool | Purpose |
-|---|---|
-| **Wazuh** | SIEM/XDR platform for log collection and threat detection. |
-| **Kali Linux** | Used to simulate brute-force attacks. |
-| **iptables** | Host-based firewall for blocking malicious IPs. |
-| **VirtualBox** | Used to run and network the virtual machines. |
-
----
-
 ## Skills Applied
 
 - Wazuh SIEM/XDR configuration
