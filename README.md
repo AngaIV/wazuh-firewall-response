@@ -26,7 +26,7 @@ A home lab project that combines **Wazuh SIEM/XDR** with `iptables` to build an 
 
 Three virtual machines running on a host-only network to simulate a real attack scenario in an isolated environment.
 
-![Network Architecture](assets/screenshots/02-network-architecture.png)
+![Network Architecture](assets/image1.png)
 
 ---
 
